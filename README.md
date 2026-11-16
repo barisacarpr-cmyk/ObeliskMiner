@@ -1,0 +1,4 @@
+# Obelisk Floor Looper (experimental)
+Android Accessibility prototype. Start it with Obelisk Miner visible. If no floor-change banner is detected for 30 seconds, it opens Floor Select, taps Floor 1, closes the menu, and taps Auto.
+**Important:** Screen coordinates are calibrated against a 461x1024 screenshot and may need adjustments on other screen sizes. The banner detector is heuristic and may give false positives/negatives. Test while watching the game; Stop immediately if it taps incorrectly.
+Build using GitHub Actions -> Build APK -> artifact ObeliskFloorLooper-APK. Enable Accessibility manually.
