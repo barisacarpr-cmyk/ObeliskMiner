@@ -16,6 +16,7 @@ class MainActivity : Activity() {
   fun btn(label:String, action:()->Unit) { layout.addView(Button(this).apply { text=label; setOnClickListener { action() } }) }
   btn("Enable Accessibility") { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
   btn("Start") { if (LooperService.instance==null) Toast.makeText(this,"Enable Accessibility first",Toast.LENGTH_LONG).show() else { LooperService.instance?.startLoop(); Toast.makeText(this,"Started",Toast.LENGTH_SHORT).show() } }
+  btn("Test reset (switch to game within 5 seconds)") { if (LooperService.instance==null) Toast.makeText(this,"Enable Accessibility first",Toast.LENGTH_LONG).show() else { LooperService.instance?.testReset(); Toast.makeText(this,"Switch to game NOW",Toast.LENGTH_LONG).show() } }
   btn("Stop") { LooperService.instance?.stopLoop() }
   setContentView(layout)
  }
