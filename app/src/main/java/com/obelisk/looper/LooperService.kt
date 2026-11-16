@@ -8,6 +8,8 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.view.Display
+import android.widget.Toast
+import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import java.util.concurrent.Executors
 
@@ -20,6 +22,7 @@ class LooperService : AccessibilityService() {
  private var lastBanner = false
  private var resetting = false
  private var lastSample = 0L
+ private var testPending = false
  private val tick = object: Runnable { override fun run() {
    if (!running) return
    if (!resetting && SystemClock.elapsedRealtime()-lastSample>=1500) {
@@ -62,13 +65,15 @@ class LooperService : AccessibilityService() {
  private fun tap(x:Float,y:Float, done:()->Unit={}) {
    val dm=resources.displayMetrics; val p=Path().apply { moveTo(dm.widthPixels*x,dm.heightPixels*y) }
    val gesture=GestureDescription.Builder().addStroke(GestureDescription.StrokeDescription(p,0,90)).build()
-   dispatchGesture(gesture,object: GestureResultCallback() {
+   val accepted=dispatchGesture(gesture,object: GestureResultCallback() {
      override fun onCompleted(gestureDescription:GestureDescription?) { handler.post { done() } }
-     override fun onCancelled(gestureDescription:GestureDescription?) { handler.post { done() } }
+     override fun onCancelled(gestureDescription:GestureDescription?) { handler.post { Toast.makeText(this@LooperService,"Tap cancelled",Toast.LENGTH_SHORT).show(); done() } }
    },null)
+   if (!accepted) { Toast.makeText(this,"Tap rejected by Android",Toast.LENGTH_SHORT).show(); handler.post { done() } }
  }
  private fun reset() {
    resetting=true
+   handler.post { Toast.makeText(this,"Looper: resetting to Floor 1",Toast.LENGTH_SHORT).show() }
    // Screenshot reference 461x1024: elevator (430,402), floor 1 (170,140),
    // menu close (230,755), auto (430,519).
    tap(.932f,.393f) {
@@ -87,6 +92,7 @@ class LooperService : AccessibilityService() {
      },500)
    }
  }
+ fun testReset() { handler.postDelayed({ if (!resetting) reset() },5000) }
  fun startLoop() { running=true; resetting=false; lastBanner=false; lastChange=SystemClock.elapsedRealtime(); handler.removeCallbacks(tick); handler.post(tick) }
  fun stopLoop() { running=false; resetting=false; handler.removeCallbacks(tick) }
  override fun onServiceConnected() { instance=this }
