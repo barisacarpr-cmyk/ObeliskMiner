@@ -14,10 +14,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
-      - name: Build APK
-        run: gradle :app:assembleDebug --no-daemon
+      - name: Build APK using preinstalled Android SDK
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          echo "Android SDK: $ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" || true
+          gradle :app:assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: ObeliskFloorLooper-APK
