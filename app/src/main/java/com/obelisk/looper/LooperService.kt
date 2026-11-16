@@ -28,7 +28,7 @@ class LooperService : AccessibilityService() {
        override fun onSuccess(result: ScreenshotResult) {
          val bitmap=Bitmap.wrapHardwareBuffer(result.hardwareBuffer,result.colorSpace)
          result.hardwareBuffer.close()
-         if (bitmap!=null) { val visible=hasBanner(bitmap); bitmap.recycle()
+         if (bitmap!=null) { val software=bitmap.copy(Bitmap.Config.ARGB_8888,false); bitmap.recycle(); val visible=hasBanner(software); software.recycle()
            handler.post {
              if (running && !resetting) {
                if (visible && !lastBanner) lastChange=SystemClock.elapsedRealtime()
